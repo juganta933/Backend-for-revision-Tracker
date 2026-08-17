@@ -4,7 +4,7 @@ const router = express.Router();
 
 const {
   getRevisionActivity,getRevisionStats
-} = require("../controllers/revisionController");
+} = require("../controllers/RevisionController");
 
 const authMiddleware = require("../middleware/authMiddleware");
 
