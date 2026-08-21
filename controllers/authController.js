@@ -3,6 +3,7 @@ const { OAuth2Client } = require("google-auth-library");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 
+
 const googleClient = new OAuth2Client(
     process.env.GOOGLE_CLIENT_ID,
     process.env.GOOGLE_CLIENT_SECRET,
@@ -34,6 +35,30 @@ const createAuthToken = (user, res) => {
     return token;
 };
 
+
+const getCurrentUser = async (req, res) => {
+    try {
+      
+        const user = await User
+            .findById(req.user.id)
+            .select("-password");
+       
+        if (!user) {
+            return res.status(404).json({
+                message: "User not found"
+            });
+        }
+
+        res.status(200).json({
+            user
+        });
+
+    } catch (error) {
+        res.status(500).json({
+            message: "Server error"
+        });
+    }
+};
 
 // ===============================
 // Normal Register
@@ -316,5 +341,6 @@ module.exports = {
     loginUser,
     googleLogin,
     googleCallback,
-    logoutUser
+    logoutUser,
+    getCurrentUser
 };

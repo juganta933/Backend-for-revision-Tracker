@@ -4,6 +4,9 @@ const probelmRoutes=require("../routes/ProblemRoutes")
 const revisionRoutes = require("../routes/RevisonRoutes");
 const cors = require("cors");
 const app=express();
+const cookieParser = require("cookie-parser");
+
+app.use(cookieParser());
 
 app.use(cors({
     origin: "http://localhost:3000",
