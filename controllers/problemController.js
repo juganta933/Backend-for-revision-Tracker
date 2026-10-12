@@ -206,6 +206,11 @@ const deleteProblem = async (req, res) => {
       user: req.user.id,
     });
 
+    await Revision.deleteMany({
+      problem: id,
+      user: req.user.id,
+    });
+
     return res.status(200).json({
       success: true,
       message: "Problem deleted successfully",

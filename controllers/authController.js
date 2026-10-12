@@ -25,10 +25,11 @@ const createAuthToken = (user, res) => {
         }
     );
 
+    const isProduction = process.env.NODE_ENV === "production";
     res.cookie("token", token, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "lax",
+        secure: isProduction,
+        sameSite: isProduction ? "none" : "lax",
         maxAge: 7 * 24 * 60 * 60 * 1000
     });
 
@@ -90,14 +91,14 @@ const registerUser = async (req, res) => {
         const user = await User.create({
             name,
             email: normalizedEmail,
-            password: hashedPassword,
-            googleId: null
+            password: hashedPassword
         });
 
-        createAuthToken(user, res);
+        const token = createAuthToken(user, res);
 
         return res.status(201).json({
             message: "User registered successfully",
+            token,
             user: {
                 id: user._id,
                 name: user.name,
@@ -159,10 +160,11 @@ const loginUser = async (req, res) => {
             });
         }
 
-        createAuthToken(user, res);
+        const token = createAuthToken(user, res);
 
         return res.status(200).json({
             message: "Login successful",
+            token,
             user: {
                 id: user._id,
                 name: user.name,
@@ -303,11 +305,11 @@ const googleCallback = async (req, res) => {
 
 
         // Create our application's JWT
-        createAuthToken(user, res);
+        const token = createAuthToken(user, res);
 
-        // Redirect to Next.js
+        // Redirect to Next.js with token query parameter as fallback for cross-domain auth
         return res.redirect(
-            `${process.env.FRONTEND_URL}/dashboard`
+            `${process.env.FRONTEND_URL}/dashboard?token=${token}`
         );
 
     } catch (error) {
@@ -324,10 +326,11 @@ const googleCallback = async (req, res) => {
 // Logout
 // ===============================
 const logoutUser = (req, res) => {
+    const isProduction = process.env.NODE_ENV === "production";
     res.clearCookie("token", {
         httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "lax"
+        secure: isProduction,
+        sameSite: isProduction ? "none" : "lax"
     });
 
     return res.status(200).json({

@@ -116,9 +116,10 @@ const getRevisionStats = async (req, res) => {
         const previousDate = dates[i - 1];
         const currentDate = dates[i];
 
-        const difference =
+        const difference = Math.round(
           (currentDate - previousDate) /
-          (1000 * 60 * 60 * 24);
+          (1000 * 60 * 60 * 24)
+        );
 
         if (difference === 1) {
           streak++;
@@ -138,18 +139,14 @@ const getRevisionStats = async (req, res) => {
     // --------------------------------------------------
 
     if (dates.length > 0) {
-      const today = new Date();
+      const todayStr = new Date().toISOString().split("T")[0];
+      const todayDate = new Date(todayStr);
+      const lastActivity = dates[dates.length - 1];
 
-      today.setHours(0, 0, 0, 0);
-
-      const lastActivity =
-        dates[dates.length - 1];
-
-      lastActivity.setHours(0, 0, 0, 0);
-
-      const daysSinceLastActivity =
-        (today - lastActivity) /
-        (1000 * 60 * 60 * 24);
+      const daysSinceLastActivity = Math.round(
+        (todayDate - lastActivity) /
+        (1000 * 60 * 60 * 24)
+      );
 
       // Current streak only exists if user
       // was active today or yesterday
@@ -163,9 +160,10 @@ const getRevisionStats = async (req, res) => {
           const currentDate = dates[i];
           const previousDate = dates[i - 1];
 
-          const difference =
+          const difference = Math.round(
             (currentDate - previousDate) /
-            (1000 * 60 * 60 * 24);
+            (1000 * 60 * 60 * 24)
+          );
 
           if (difference === 1) {
             currentStreak++;
